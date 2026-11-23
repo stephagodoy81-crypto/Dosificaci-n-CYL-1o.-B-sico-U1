@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizarra Digital - Dosificación Unidad 1 | Colegio Montano</title>
+    <!-- Carga de Tailwind CSS para utilidades responsivas y estructura -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Variables de Identidad Visual - Colegio Montano */
+        :root {
+            --azul-principal: #1269A8;
+            --amarillo-brillante: #F7D615;
+            --verde-grisaceo: #54887D;
+            --azul-claro: #88B5C7;
+            --verde-oliva: #A6B046;
+            --blanco-suave: #F2F5E9;
+            --texto-oscuro: #1e293b;
+        }
+
+        /* Tipografía Institucional */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e2e8f0;
+            color: var(--texto-oscuro);
+            margin: 0;
+            padding: 12px;
+        }
+
+        /* Marco de Pizarra Digital */
+        .pizarra-frame {
+            background-color: var(--blanco-suave);
+            border: 5px solid var(--amarillo-brillante);
+            border-radius: 12px;
+            box-shadow: 0 12px 30px rgba(18, 105, 168, 0.25);
+            overflow: hidden;
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            min-height: 90vh;
+            transition: all 0.3s ease;
+        }
+
+        /* Ajuste en Modo Pantalla Completa */
+        :fullscreen .pizarra-frame {
+            max-width: 100%;
+            height: 100vh;
+            border-radius: 0;
+            border-width: 4px;
+        }
+
+        /* Encabezado de la Pizarra */
+        .pizarra-header {
+            background: linear-gradient(135deg, var(--azul-principal) 0%, #0d4f80 100%);
+            color: white;
+            border-bottom: 4px solid var(--amarillo-brillante);
+        }
+
+        /* Botón Pantalla Completa */
+        .btn-fullscreen {
+            background-color: var(--amarillo-brillante);
+            color: var(--azul-principal);
+            font-weight: 700;
+            border-radius: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-fullscreen:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            background-color: #ffe02e;
+        }
+
+        /* Navegación de Pestañas Horizontales */
+        .nav-tabs {
+            background-color: #ffffff;
+            border-bottom: 2px solid var(--azul-claro);
+            display: flex;
+            overflow-x: auto;
+            scrollbar-width: thin;
+        }
+
+        .tab-btn {
+            padding: 14px 20px;
+            font-weight: 700;
+            color: var(--verde-grisaceo);
+            border-bottom: 4px solid transparent;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn:hover {
+            background-color: var(--blanco-suave);
+            color: var(--azul-principal);
+        }
+
+        .tab-btn.active {
+            background-color: var(--azul-principal);
+            color: #ffffff;
+            border-bottom: 4px solid var(--amarillo-brillante);
+        }
+
+        /* Tarjetas y Contenedores Pedagógicos */
+        .card-montano {
+            background-color: #ffffff;
+            border-left: 5px solid var(--verde-grisaceo);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease;
+        }
+
+        .card-montano:hover {
+            transform: translateY(-2px);
+        }
+
+        .card-ejercicio {
+            background-color: rgba(136, 181, 199, 0.22); /* Azul Claro suave */
+            border: 1px solid var(--azul-claro);
+            border-radius: 10px;
+        }
+
+        /* Etiquetas de Nivel y Categoría */
+        .badge-oliva {
+            background-color: var(--verde-oliva);
+            color: #ffffff;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 9999px;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-azul {
+            background-color: var(--azul-principal);
+            color: #ffffff;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 9999px;
+            font-size: 0.78rem;
+        }
+
+        .badge-amarillo {
+            background-color: var(--amarillo-brillante);
+            color: var(--azul-principal);
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+        }
+
+        /* Botón Mostrar / Ocultar Solución */
+        .btn-solucion {
+            background-color: var(--azul-principal);
+            color: white;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-solucion:hover {
+            background-color: var(--verde-grisaceo);
+        }
+
+        .caja-solucion {
+            background-color: #ffffff;
+            border-left: 4px solid var(--verde-oliva);
+            border-radius: 8px;
+            margin-top: 12px;
+            padding: 14px;
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .caja-solucion.visible {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Animación de secciones */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.35s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- MARCO PRINCIPAL DE PIZARRA DIGITAL -->
+    <div id="pizarra" class="pizarra-frame">
+        
+        <!-- ENCABEZADO INSTITUCIONAL -->
+        <header class="pizarra-header p-4 md:p-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <!-- Logo y Títulos -->
+                <div class="flex items-center gap-4">
+                    <div class="bg-white p-2 rounded-xl shadow-md shrink-0">
+                        <img 
+                            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyEop0yf6lZ7Jk9MILZxF1rBj4Oqs5esyhIQ&s" 
+                            alt="Logo Colegio Montano" 
+                            class="h-14 w-14 md:h-16 md:w-16 object-contain"
+                            onerror="this.src='https://placehold.co/80x80/1269A8/F7D615?text=CM'"
+                        >
+                    </div>
+                    <div>
+                        <div class="flex flex-wrap items-center gap-2 mb-1">
+                            <span class="badge-amarillo">COLEGIO MONTANO</span>
+                            <span class="text-xs md:text-sm font-semibold text-blue-100 bg-white/10 px-2.5 py-0.5 rounded-full">
+                                📅 18 de Enero al 5 de Marzo
+                            </span>
+                        </div>
+                        <h1 class="text-xl md:text-2xl lg:text-3xl font-bold tracking-tight text-white">
+                            Comunicación y Lenguaje — Dosificación Unidad 1
+                        </h1>
+                        <p class="text-sm md:text-base text-blue-100 mt-0.5">
+                            <strong>Grado:</strong> Primero Básico &nbsp;|&nbsp; <strong>Docente:</strong> Stephany Godoy &nbsp;|&nbsp; <strong>Zona Total:</strong> 100 Pts (4 Módulos × 25 Pts)
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Botón Pantalla Completa -->
+                <button id="btnFullscreen" onclick="toggleFullscreen()" class="btn-fullscreen px-4 py-2.5 text-sm md:text-base self-end md:self-center shrink-0 flex items-center gap-2">
+                    <span id="fsIcon">⛶</span>
+                    <span id="fsText">Pantalla completa</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- MENÚ DE PESTAÑAS HORIZONTALES INTERACTIVAS -->
+        <nav class="nav-tabs" role="tablist">
+            <button class="tab-btn active" onclick="openTab(event, 'teoria')">
+                <span>📘</span> Teoría y Dosificación (4 Módulos)
+            </button>
+            <button class="tab-btn" onclick="openTab(event, 'ejemplos')">
+                <span>💡</span> Ejemplos Resueltos (15)
+            </button>
+            <button class="tab-btn" onclick="openTab(event, 'ejercicios')">
+                <span>✍️</span> Ejercicios Prácticos (15)
+            </button>
+            <button class="tab-btn" onclick="openTab(event, 'reflexion')">
+                <span>🧠</span> Reflexión Crítica
+            </button>
+            <button class="tab-btn" onclick="openTab(event, 'evaluacion')">
+                <span>✅</span> Evaluación Formativa
+            </button>
+        </nav>
+
+        <!-- CONTENIDO DEL LIENZO DE TRABAJO -->
+        <main class="p-4 md:p-8 flex-1 overflow-y-auto">
+
+            <!-- ===================================================================== -->
+            <!-- SECCIÓN 1: EXPLICACIÓN TEÓRICA Y DOSIFICACIÓN DE LOS 4 MÓDULOS        -->
+            <!-- ===================================================================== -->
+            <section id="teoria" class="tab-content active space-y-8">
+                
+                <!-- Banner Resumen de Estructura -->
+                <div class="bg-white p-5 rounded-xl border-2 border-[#54887D] shadow-sm">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-200 pb-4 mb-4">
+                        <div>
+                            <h2 class="text-xl md:text-2xl font-bold text-[#1269A8]">Planificación Didáctica y Cronograma de Evaluación</h2>
+                            <p class="text-sm text-gray-600 mt-1">Distribución académica de la Unidad 1 (7 semanas lectivas: 18 de enero al 5 de marzo).</p>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="badge-azul">4 Módulos</span>
+                            <span class="badge-oliva">25 Pts c/u</span>
+                            <span class="badge-amarillo">Total: 100 Pts</span>
+                        </div>
+                    </div>
+
+                    <!-- Leyenda de Modalidades de Trabajo -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 text-xs font-semibold text-center">
+                        <div class="p-2 rounded-lg bg-blue-50 text-[#1269A8] border border-blue-200">👤 Trabajo Individual</div>
+                        <div class="p-2 rounded-lg bg-teal-50 text-[#54887D] border border-teal-200">👥 Trabajo en Equipo</div>
+                        <div class="p-2 rounded-lg bg-amber-50 text-amber-800 border border-amber-200">🚀 Proyecto</div>
+                        <div class="p-2 rounded-lg bg-lime-50 text-lime-800 border border-lime-300">🏆 Logro / Integrado</div>
+                        <div class="p-2 rounded-lg bg-purple-50 text-purple-800 border border-purple-200">🔄 Retroalimentación</div>
+                    </div>
+                </div>
+
+                <!-- GRID DE LOS 4 MÓDULOS (25 PTS CADA UNO) -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                    <!-- MÓDULO 1 -->
+                    <div class="card-montano p-5 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="badge-azul">MÓDULO 1 • Semanas 1 y 2 (18 Ene - 29 Ene)</span>
+                                <span class="badge-amarillo">25 Puntos</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-[#1269A8] mb-2">Expresión Oral y Comprensión Estructural</h3>
+                            <p class="text-sm text-gray-700 mb-4 bg-[#F2F5E9] p-3 rounded-lg">
+                                <strong>Contenidos:</strong> Comunicación grupal y expresión oral; Análisis de textos; Análisis de párrafos.
+                            </p>
+                            
+                            <!-- Tabla de Actividades Módulo 1 -->
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm text-left border-collapse">
+                                    <thead>
+                                        <tr class="bg-[#1269A8] text-white">
+                                            <th class="p-2 rounded-tl-lg">Actividad</th>
+                                            <th class="p-2">Modalidad</th>
+                                            <th class="p-2 text-right rounded-tr-lg">Pts</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200">
+                                        <tr>
+                                            <td class="p-2 font-medium">1. Mesa redonda: Dinámicas de escucha activa</td>
+                                            <td class="p-2"><span class="text-xs font-bold text-[#54887D]">👥 Equipo</span></td>
+                                            <td class="p-2 text-right font-bold">5 pts</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-2 font-medium">2. Ficha de análisis de textos narrativos e informativos</td>
+                                            <td class="p-2"><span class="text-xs font-bold text-[#1269A8]">👤 Individual</span></td>
+                                            <td class="p-2 text-right font-bold">5 pts</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-2 font-medium">3. Disección de párrafos (idea principal y secundarias)</td>
+                                            <td class="p-2"><span class="text-xs font-bold text-lime-700">🏆 Logro</span></td>
+                                            <td class="p-2 text-right font-bold">6 pts</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-2 font-medium">4. Cápsula informativa oral sobre lectura analizada</td>
+                                            <td class="p-2"><span class="text-xs font-bold text-amber-700">🚀 Proyecto</span></td>
+                                            <td class="p-2 text-right font-bold">6 pts</td>
+                                        </tr>
+                                        <tr class="bg-purple-50">
+                                            <td class="p-2 font-bold text-purple-900">5. Clínica de Retroalimentación: Rutina de lectura</td>
+                                            <td class="p-2"><span class="text-xs font-bold text-purple-800">🔄 Retroalim.</span></td>
+                                            <td class="p-2 text-right font-bold text-purple-900">3 pts</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-2 border-t border-gray-200 flex justify-between items-center text-sm font-bold text-[#54887D]">
+                            <span>Subtotal Módulo 1:</span>
+                            <span>25 / 25 Puntos</span>
+                        </div>
+                    </div>
+
+                    <!-- MÓDULO 2 -->
+                    <div class="card-montano p-5 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="badge-azul">MÓDULO 2 • Semanas 3 y 4 (01 Feb - 12 Feb)</span>
+                                <span class="badge-amarillo">25 Puntos</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-[#1269A8] mb-2">Síntesis Visual y Fonología de la Palabra</h3>
+                            <p class="text-sm text-gray-700 mb-4 bg-[#F2F5E9] p-3 rounded-lg">
+                                <strong>Contenidos:</strong> Organizadores gráficos; Palabras según su número de sílabas; Palabras según su acentuación.
+                            </p>
+                            
+                            <!-- Tabla de Actividades Módulo 2 -->
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm text-left border-collapse">
+                                    <thead>
+                                        <tr class="bg-[#1269A8] text-white">
+                                            <th class="p-2 rounded-tl-lg">Actividad</th>
+                                            <th class="p-2">Modalidad</th>
+                                            <th class="p-2 text-right rounded-tr-lg">Pts</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200">
+                                        <tr>
+                                            <td class="p-2 font-medium">1. Mapa conceptual y cuadro sinóptico de lecturas</td>
+                                            <td class="p-2"><span class="text-xs font-bold text-[#1269A8]">👤 Individual</span></td>
+                                            <td class="p-2 text-right font-bold">5 pts</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-2 font-medium">2. Taller de división silábica (monosílabas a polisílabas)</td>
+                                            <td class="p-2"><span class="text-xs font-bold text-[#54887D]">👥 Equipo</span></td>
+                                            <td class="p-2 text-right font-bold">5 pts</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-2 font-medium">3. Rally ortográfico: Agudas, graves, esdrújulas y sobresdrújulas</td>
+                                            <td class="p-2"><span class="text-xs font-bold text-lime-700">🏆 Logro</span></td>
+                                            <td class="p-2 text-right font-bold">6 pts</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-2 font-medium">4. Infografía gigante de reglas generales de tildación</td>
+                                            <td class="p-2"><span class="text-xs font-bold text-amber-700">🚀 Integrado</span></td>
+                                            <td class="p-2 text-right font-bold">6 pts</td>
+                                        </tr>
+                                        <tr class="bg-purple-50">
+                                            <td class="p-2 font-bold text-purple-900">5. Clínica de Retroalimentación: Dictado y corrección</td>
+                                            <td class="p-2"><span class="text-xs font-bold text-purple-800">🔄 Retroalim.</span></td>
+                                            <td class="p-2 text-right font-bold text-purple-900">3 pts</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-2 border-t border-gray-200 flex justify-between items-center text-sm font-bold text-[#54887D]">
+                            <span>Subtotal Módulo 2:</span>
+                            <span>25 / 25 Puntos</span>
+                        </div>
+                    </div>
+
+                    <!-- MÓDULO 3 -->
+                    <div class="card-montano p-5 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="badge-azul">MÓDULO 3 • Semana 5 (15 Feb - 19 Feb)</span>
+                                <span class="badge-amarillo">25 Puntos</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-[#1269A8] mb-2">Ortografía Puntual y Precisión Escrita</h3>
+                            <p class="text-sm text-gray-700 mb-4 bg-[#F2F5E9] p-3 rounded-lg">
+                                <strong>Contenidos:</strong> Signos de puntuación y entonación (coma, punto, interrogación, exclamación); Signos auxiliares (guion, raya, paréntesis, comillas, diéresis).
+                            </p>
+                            
+                            <!-- Tabla de Actividades Módulo 3 -->
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm text-left border-collapse">
+                                    <thead>
+                                        <tr class="bg-[#1269A8] text-white">
+                                            <th class="p-2 rounded-tl-lg">Actividad</th>
+                                            <th class="p-2">Modalidad</th>
+                                            <th class="p-2 text-right rounded-tr-lg">Pts</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200">
+                                        <tr>
+                                            <td class="p-2 font-medium">1. Laboratorio de puntuación: Cambios de sentido textual</td>
+                                            <td class="p-2"><span class="text-xs font-bold text-[#1269A8]">👤 Individual</span></td>
+                                            <td class="p-2 text-right font-bold">5 pts</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-2 font-medium">2. Lectura dramatizada con énfasis en entonación</td>
+                                            <td class="p-2"><span class="text-xs font-bold text-[#54887D]">👥 Equipo</span></td>
+                                            <td class="p-2 text-right font-bold">5 pts</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-2 font-medium">3. Edición de diálogos teatrales usando signos auxiliares</td>
+                                            <td class="p-2"><span class="text-xs font-bold text-amber-700">🚀 Proyecto</span></td>
+                                            <td class="p-2 text-right font-bold">6 pts</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-2 font-medium">4. Prueba objetiva de aplicación ortográfica integral</td>
+                                            <td class="p-2"><span class="text-xs font-bold text-lime-700">🏆 Logro</span></td>
+                                            <td class="p-2 text-right font-bold">6 pts</td>
+                                        </tr>
+                                        <tr class="bg-purple-50">
+                                            <td class="p-2 font-bold text-purple-900">5. Clínica de Retroalimentación: Coevaluación de textos</td>
+                                            <td class="p-2"><span class="text-xs font-bold text-purple-800">🔄 Retroalim.</span></td>
+                                            <td class="p-2 text-right font-bold text-purple-900">3 pts</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-2 border-t border-gray-200 flex justify-between items-center text-sm font-bold text-[#54887D]">
+                            <span>Subtotal Módulo 3:</span>
+                            <span>25 / 25 Puntos</span>
+                        </div>
+                    </div>
+
+                    <!-- MÓDULO 4 -->
+                    <div class="card-montano p-5 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="badge-azul">MÓDULO 4 • Semanas 6 y 7 (22 Feb - 05 Mar)</span>
+                                <span class="badge-amarillo">25 Puntos</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-[#1269A8] mb-2">Producción Textual, Sintaxis y Oratoria</h3>
+                            <p class="text-sm text-gray-700 mb-4 bg-[#F2F5E9] p-3 rounded-lg">
+                                <strong>Contenidos:</strong> Tipos de oración (según actitud del hablante y estructura); Redacción coherente; Técnicas de discusión y expresión oral (debate, panel, foro).
+                            </p>
+                            
+                            <!-- Tabla de Actividades Módulo 4 -->
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm text-left border-collapse">
+                                    <thead>
+                                        <tr class="bg-[#1269A8] text-white">
+                                            <th class="p-2 rounded-tl-lg">Actividad</th>
+                                            <th class="p-2">Modalidad</th>
+                                            <th class="p-2 text-right rounded-tr-lg">Pts</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200">
+                                        <tr>
+                                            <td class="p-2 font-medium">1. Clasificador sintáctico de tipos de oraciones</td>
+                                            <td class="p-2"><span class="text-xs font-bold text-[#1269A8]">👤 Individual</span></td>
+                                            <td class="p-2 text-right font-bold">5 pts</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-2 font-medium">2. Taller de redacción: Artículo de opinión escolar</td>
+                                            <td class="p-2"><span class="text-xs font-bold text-lime-700">🏆 Integrado</span></td>
+                                            <td class="p-2 text-right font-bold">6 pts</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-2 font-medium">3. Debate parlamentario estudiantil (técnicas de discusión)</td>
+                                            <td class="p-2"><span class="text-xs font-bold text-[#54887D]">👥 Equipo</span></td>
+                                            <td class="p-2 text-right font-bold">6 pts</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-2 font-medium">4. Revista Digital de Unidad (compilación de producciones)</td>
+                                            <td class="p-2"><span class="text-xs font-bold text-amber-700">🚀 Proyecto</span></td>
+                                            <td class="p-2 text-right font-bold">5 pts</td>
+                                        </tr>
+                                        <tr class="bg-purple-50">
+                                            <td class="p-2 font-bold text-purple-900">5. Clínica de Retroalimentación: Portafolio y cierre</td>
+                                            <td class="p-2"><span class="text-xs font-bold text-purple-800">🔄 Retroalim.</span></td>
+                                            <td class="p-2 text-right font-bold text-purple-900">3 pts</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-2 border-t border-gray-200 flex justify-between items-center text-sm font-bold text-[#54887D]">
+                            <span>Subtotal Módulo 4:</span>
+                            <span>25 / 25 Puntos</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- SÍNTESIS TEÓRICA DE LOS TEMAS DE LA UNIDAD -->
+                <div class="bg-white p-6 rounded-xl border border-[#88B5C7] shadow-sm space-y-4">
+                    <h3 class="text-xl font-bold text-[#1269A8] border-b-2 border-[#F7D615] pb-2">
+                        📚 Síntesis Conceptual de Contenidos (Primero Básico)
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm leading-relaxed">
+                        <div class="p-3 bg-[#F2F5E9] rounded-lg">
+                            <h4 class="font-bold text-[#54887D]">1. Análisis de Textos y Párrafos</h4>
+                            <p>Un <strong>texto</strong> es una unidad completa de comunicación con coherencia y cohesión. Se divide en <strong>párrafos</strong>, los cuales contienen una <em>idea principal</em> (núcleo temático) y varias <em>ideas secundarias</em> que ejemplifican, explican o amplían.</p>
+                        </div>
+                        <div class="p-3 bg-[#F2F5E9] rounded-lg">
+                            <h4 class="font-bold text-[#54887D]">2. Organizadores Gráficos</h4>
+                            <p>Herramientas visuales para jerarquizar información: <strong>mapas conceptuales</strong> (conceptos + palabras enlace), <strong>mapas mentales</strong> (ideas radiales con imágenes), <strong>cuadros sinópticos</strong> (llaves de lo general a lo particular) y <strong>líneas de tiempo</strong>.</p>
+                        </div>
+                        <div class="p-3 bg-[#F2F5E9] rounded-lg">
+                            <h4 class="font-bold text-[#54887D]">3. Sílabas y Acentuación</h4>
+                            <p>Por sílabas: <em>monosílabas (1), bisílabas (2), trisílabas (3), polisílabas (4+)</em>. Por acento: <strong>Agudas</strong> (última, tildan en n, s, vocal), <strong>Graves</strong> (penúltima, tildan si NO terminan en n, s, vocal), <strong>Esdrújulas</strong> (antepenúltima, siempre tildan) y <strong>Sobresdrújulas</strong> (siempre tildan).</p>
+                        </div>
+                        <div class="p-3 bg-[#F2F5E9] rounded-lg">
+                            <h4 class="font-bold text-[#54887D]">4. Puntuación, Signos Auxiliares y Oración</h4>
+                            <p>Los <strong>signos de puntuación</strong> delimitan pausas (., ; :); los de <strong>entonación</strong> expresan duda o emoción (¿? ¡!); los <strong>auxiliares</strong> aclaran información (— «» () ¨). La <strong>oración</strong> expresa sentido completo y puede ser enunciativa, interrogativa, exclamativa, imperativa, dubitativa o desiderativa.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================================================================== -->
+            <!-- SECCIÓN 2: EJEMPLOS RESUELTOS (5 BÁSICO, 5 INTERMEDIO, 5 AVANZADO)    -->
+            <!-- ===================================================================== -->
+            <section id="ejemplos" class="tab-content space-y-8">
+                <div class="bg-white p-5 rounded-xl border-l-4 border-[#1269A8]">
+                    <h2 class="text-2xl font-bold text-[#1269A8]">Ejemplos Resueltos Paso a Paso</h2>
+                    <p class="text-sm text-gray-600">15 modelos desarrollados progresivamente para dominar los contenidos de la Unidad 1.</p>
+                </div>
+
+                <!-- NIVEL BÁSICO -->
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2">
+                        <span class="badge-oliva">Nivel Básico</span>
+                        <h3 class="text-lg font-bold text-[#54887D]">Identificación y Reconocimiento Fundamental</h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="card-montano p-4">
+                            <span class="text-xs font-bold text-[#1269A8]">Ejemplo Básico 1 • División Silábica</span>
+                            <p class="font-semibold mt-1">Clasifica la palabra <span class="underline">"comunicación"</span> según su número de sílabas.</p>
+                            <p class="text-sm text-gray-700 mt-2 bg-[#F2F5E9] p-2.5 rounded">
+                                <strong>Resolución:</strong> Separamos en golpes de voz: <em>co - mu - ni - ca - ción</em> (observa que "ción" forma diptongo en una sola sílaba). Tiene <strong>5 sílabas</strong>, por lo tanto es una palabra <strong>polisílaba</strong>.
+                            </p>
+                        </div>
+
+                        <div class="card-montano p-4">
+                            <span class="text-xs font-bold text-[#1269A8]">Ejemplo Básico 2 • Acentuación General</span>
+                            <p class="font-semibold mt-1">Determina por qué lleva tilde la palabra <span class="underline">"párrafo"</span>.</p>
+                            <p class="text-sm text-gray-700 mt-2 bg-[#F2F5E9] p-2.5 rounded">
+                                <strong>Resolución:</strong> Dividimos: <em>pá - rra - fo</em>. La sílaba tónica es "pá" (antepenúltima sílaba). Es una palabra <strong>esdrújula</strong> y la regla indica que todas las esdrújulas llevan tilde sin excepción.
+                            </p>
+                        </div>
+
+                        <div class="card-montano p-4">
+                            <span class="text-xs font-bold text-[#1269A8]">Ejemplo Básico 3 • Tipos de Oración</span>
+                            <p class="font-semibold mt-1">Identifica la clase de oración según la actitud del hablante: <em>"¡Qué excelente exposición realizó tu equipo!"</em></p>
+                            <p class="text-sm text-gray-700 mt-2 bg-[#F2F5E9] p-2.5 rounded">
+                                <strong>Resolución:</strong> Está encerrada entre signos de admiración (¡ !) y expresa entusiasmo o sorpresa. Es una <strong>oración exclamativa</strong>.
+                            </p>
+                        </div>
+
+                        <div class="card-montano p-4">
+                            <span class="text-xs font-bold text-[#1269A8]">Ejemplo Básico 4 • Signos de Puntuación</span>
+                            <p class="font-semibold mt-1">¿Qué signo de puntuación falta en la enumeración: <em>"En la mochila llevo cuadernos__ lápices__ borradores y reglas."</em>?</p>
+                            <p class="text-sm text-gray-700 mt-2 bg-[#F2F5E9] p-2.5 rounded">
+                                <strong>Resolución:</strong> Se utiliza la <strong>coma (,)</strong> para separar elementos de una serie o enumeración sencilla: <em>"cuadernos, lápices, borradores y reglas."</em>
+                            </p>
+                        </div>
+
+                        <div class="card-montano p-4 md:col-span-2">
+                            <span class="text-xs font-bold text-[#1269A8]">Ejemplo Básico 5 • Comunicación Grupal</span>
+                            <p class="font-semibold mt-1">En un <strong>debate escolar</strong>, ¿cuál es la función específica del moderador?</p>
+                            <p class="text-sm text-gray-700 mt-2 bg-[#F2F5E9] p-2.5 rounded">
+                                <strong>Resolución:</strong> El moderador presenta el tema, asigna los turnos de palabra de manera equitativa, controla el tiempo de intervención y mantiene el respeto entre los participantes sin tomar partido por ninguna postura.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NIVEL INTERMEDIO -->
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2">
+                        <span class="badge-azul">Nivel Intermedio</span>
+                        <h3 class="text-lg font-bold text-[#54887D]">Aplicación de Reglas y Análisis Estructural</h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="card-montano p-4">
+                            <span class="text-xs font-bold text-[#54887D]">Ejemplo Intermedio 1 • Análisis de Párrafos</span>
+                            <p class="font-semibold mt-1">Extrae la idea principal del siguiente párrafo:</p>
+                            <p class="text-xs italic text-gray-600 my-1">"Los organizadores gráficos facilitan el aprendizaje significativo. Por ejemplo, los mapas conceptuales ayudan a conectar ideas previas, mientras que los cuadros sinópticos resumen temas extensos."</p>
+                            <p class="text-sm text-gray-700 mt-2 bg-[#F2F5E9] p-2.5 rounded">
+                                <strong>Resolución:</strong> La <strong>idea principal</strong> está al inicio (párrafo analizante): <em>"Los organizadores gráficos facilitan el aprendizaje significativo."</em> El resto son ejemplos (ideas secundarias).
+                            </p>
+                        </div>
+
+                        <div class="card-montano p-4">
+                            <span class="text-xs font-bold text-[#54887D]">Ejemplo Intermedio 2 • Signos Auxiliares</span>
+                            <p class="font-semibold mt-1">Aplica correctamente la <strong>raya (—)</strong> y la <strong>diéresis (¨)</strong> en: <em>"El pinguino dijo Hola amigos."</em></p>
+                            <p class="text-sm text-gray-700 mt-2 bg-[#F2F5E9] p-2.5 rounded">
+                                <strong>Resolución:</strong> <em>"El <strong>pingüino</strong> dijo: <br><strong>—</strong>¡Hola, amigos!"</em> (La diéresis da sonido a la "u" en güi; la raya introduce la intervención directa del personaje).
+                            </p>
+                        </div>
+
+                        <div class="card-montano p-4">
+                            <span class="text-xs font-bold text-[#54887D]">Ejemplo Intermedio 3 • Selección de Organizador Gráfico</span>
+                            <p class="font-semibold mt-1">Si deseas comparar las ventajas y desventajas del debate frente a la mesa redonda, ¿qué organizador debes elegir?</p>
+                            <p class="text-sm text-gray-700 mt-2 bg-[#F2F5E9] p-2.5 rounded">
+                                <strong>Resolución:</strong> Un <strong>Cuadro Comparativo</strong> (o Diagrama de Venn), ya que permite contrastar criterios específicos (roles, reglas, finalidad) de dos técnicas grupales en columnas paralelas.
+                            </p>
+                        </div>
+
+                        <div class="card-montano p-4">
+                            <span class="text-xs font-bold text-[#54887D]">Ejemplo Intermedio 4 • Contraste de Acentuación</span>
+                            <p class="font-semibold mt-1">Explica la diferencia ortográfica entre las palabras <span class="underline">"árbol"</span> y <span class="underline">"pared"</span>.</p>
+                            <p class="text-sm text-gray-700 mt-2 bg-[#F2F5E9] p-2.5 rounded">
+                                <strong>Resolución:</strong> <em>Ár-bol</em> es <strong>grave</strong> (sílaba tónica "ár") y termina en consonante "l" (distinta de n, s o vocal), por eso lleva tilde. <em>Pa-red</em> es <strong>aguda</strong> (sílaba tónica "red") y termina en "d", por lo tanto NO lleva tilde.
+                            </p>
+                        </div>
+
+                        <div class="card-montano p-4 md:col-span-2">
+                            <span class="text-xs font-bold text-[#54887D]">Ejemplo Intermedio 5 • Transformación de Oraciones</span>
+                            <p class="font-semibold mt-1">Transforma la oración enunciativa <em>"Entregaste el proyecto a tiempo"</em> en una oración <strong>dubitativa</strong> y en una <strong>imperativa</strong>.</p>
+                            <p class="text-sm text-gray-700 mt-2 bg-[#F2F5E9] p-2.5 rounded">
+                                <strong>Resolución:</strong> <br>
+                                • <strong>Dubitativa (expresa duda):</strong> <em>"Quizás entregaste el proyecto a tiempo."</em><br>
+                                • <strong>Imperativa (expresa orden o ruego):</strong> <em>"Entrega el proyecto a tiempo."</em>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NIVEL AVANZADO -->
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2">
+                        <span class="badge-amarillo">Nivel Avanzado</span>
+                        <h3 class="text-lg font-bold text-[#54887D]">Integración Multidimensional y Producción Crítica</h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-4">
+                        <div class="card-montano p-4">
+                            <span class="text-xs font-bold text-[#1269A8]">Ejemplo Avanzado 1 • Puntuación + Signos Auxiliares + Tipos de Oración</span>
+                            <p class="font-semibold mt-1">Corrige y justifica todos los errores en el fragmento: <em>"cuando llegamos al salon de clases la maestra stephany pregunto terminaron el analisis del texto si respondimos todos"</em></p>
+                            <p class="text-sm text-gray-700 mt-2 bg-[#F2F5E9] p-3 rounded">
+                                <strong>Resolución Integral:</strong> <em>"Cuando llegamos al <strong>salón</strong> de clases, la maestra Stephany <strong>preguntó</strong>: <br>—<strong>¿Terminaron</strong> el <strong>análisis</strong> del texto?<br>—<strong>¡Sí!</strong> —respondimos todos."</em><br>
+                                <strong>Justificación:</strong> Se agregan tildes en agudas terminadas en n/vocal (salón, preguntó) y esdrújula (análisis); coma tras complemento circunstancial antepuesto; dos puntos antes de cita textual; rayas de diálogo; signos dobles de interrogación y exclamación; y tilde diacrítica en afirmación ("Sí").
+                            </p>
+                        </div>
+
+                        <div class="card-montano p-4">
+                            <span class="text-xs font-bold text-[#1269A8]">Ejemplo Avanzado 2 • Coherencia y Cohesión en Redacción de Párrafos</span>
+                            <p class="font-semibold mt-1">Redacta un párrafo argumentativo de 4 líneas sobre la importancia de la lectura, integrando: una oración enunciativa, una interrogativa retórica, un paréntesis aclaratorio y una palabra esdrújula.</p>
+                            <p class="text-sm text-gray-700 mt-2 bg-[#F2F5E9] p-3 rounded">
+                                <strong>Resolución Integral:</strong> <em>"La lectura diaria fortalece el pensamiento crítico de los jóvenes (especialmente entre los 12 y 15 años). ¿Acaso existe una herramienta más poderosa para ampliar nuestro vocabulario? Al comprender la estructura de cada <strong>párrafo</strong>, el estudiante desarrolla autonomía intelectual."</em><br>
+                                <strong>Verificación:</strong> Cumple con oración enunciativa inicial, interrogativa retórica, paréntesis aclaratorio y palabra esdrújula ("párrafo").
+                            </p>
+                        </div>
+
+                        <div class="card-montano p-4">
+                            <span class="text-xs font-bold text-[#1269A8]">Ejemplo Avanzado 3 • Silabeo con Hiatos, Diptongos y Tildación</span>
+                            <p class="font-semibold mt-1">Analiza silábica y ortográficamente las palabras <span class="underline">"ortografía"</span> y <span class="underline">"cuídate"</span>.</p>
+                            <p class="text-sm text-gray-700 mt-2 bg-[#F2F5E9] p-3 rounded">
+                                <strong>Resolución Integral:</strong> <br>
+                                • <strong>Ortografía:</strong> <em>or - to - gra - fí - a</em> (5 sílabas, polisílaba). Presenta un <strong>hiato acentual</strong> (vocal cerrada tónica "í" + vocal abierta "a"), por lo que se separan y lleva tilde obligatoria para romper el diptongo.<br>
+                                • <strong>Cuídate:</strong> <em>cuí - da - te</em> (3 sílabas, trisílaba). "cuí" mantiene el diptongo (dos vocales cerradas distintas) y recae la fuerza en la antepenúltima sílaba, siendo <strong>esdrújula</strong>.
+                            </p>
+                        </div>
+
+                        <div class="card-montano p-4">
+                            <span class="text-xs font-bold text-[#1269A8]">Ejemplo Avanzado 4 • Diseño de Estructura para Mesa Redonda</span>
+                            <p class="font-semibold mt-1">Diseña el esquema lógico de intervención para una mesa redonda sobre "El uso responsable de las redes sociales en Primero Básico".</p>
+                            <p class="text-sm text-gray-700 mt-2 bg-[#F2F5E9] p-3 rounded">
+                                <strong>Resolución Integral:</strong> 1) <em>Apertura del moderador</em> (definición del tema y presentación de 4 panelistas). 2) <em>Ronda de exposición</em> (2 min por panelista: enfoque psicológico, académico, seguridad digital y convivencia). 3) <em>Ronda de réplica</em> (intercambio respetuoso de puntos de vista). 4) <em>Foro abierto</em> (preguntas del público). 5) <em>Síntesis y cierre</em> del moderador.
+                            </p>
+                        </div>
+
+                        <div class="card-montano p-4">
+                            <span class="text-xs font-bold text-[#1269A8]">Ejemplo Avanzado 5 • Síntesis de Texto Expositivo a Mapa Conceptual</span>
+                            <p class="font-semibold mt-1">Convierte el siguiente enunciado en jerarquía de mapa conceptual: <em>"Los signos auxiliares incluyen las comillas, que sirven para citar textualmente, y los paréntesis, que intercalan datos aclaratorios."</em></p>
+                            <p class="text-sm text-gray-700 mt-2 bg-[#F2F5E9] p-3 rounded">
+                                <strong>Resolución Integral:</strong> <br>
+                                [SIGNOS AUXILIARES] —<em>incluyen</em>→ [Comillas] —<em>sirven para</em>→ [Citar textualmente] / [Paréntesis] —<em>sirven para</em>→ [Intercalar datos aclaratorios]. (Se respetan recuadros para conceptos y palabras enlace en minúsculas sin encerrar).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================================================================== -->
+            <!-- SECCIÓN 3: EJERCICIOS PRÁCTICOS (15 EJERCICIOS PARA EL ESTUDIANTE)    -->
+            <!-- ===================================================================== -->
+            <section id="ejercicios" class="tab-content space-y-8">
+                <div class="bg-white p-5 rounded-xl border-l-4 border-[#54887D] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <div>
+                        <h2 class="text-2xl font-bold text-[#1269A8]">Taller de Ejercicios Prácticos</h2>
+                        <p class="text-sm text-gray-600">Resuelve en tu cuaderno o pizarra y verifica tus respuestas con el botón interactivo.</p>
+                    </div>
+                    <span class="badge-oliva">15 Ejercicios Graduados</span>
+                </div>
+
+                <!-- BLOQUE BÁSICO (1 - 5) -->
+                <div class="space-y-3">
+                    <h3 class="text-lg font-bold text-[#1269A8] border-b border-gray-300 pb-1">🟢 Nivel Básico (Ejercicios 1 al 5)</h3>
+                    
+                    <div class="card-ejercicio p-4">
+                        <p class="font-bold text-[#1269A8]">Ejercicio 1 (Número de sílabas):</p>
+                        <p class="text-sm mt-1">Divide en sílabas y clasifica según su cantidad: <strong>a) sol &nbsp;|&nbsp; b) texto &nbsp;|&nbsp; c) párrafo &nbsp;|&nbsp; d) organizador</strong>.</p>
+                        <button class="btn-solucion mt-3 text-xs" onclick="toggleSolucion('sol-ej1', this)">👁️ Mostrar solución</button>
+                        <div id="sol-ej1" class="caja-solucion text-sm">
+                            <strong>Solución:</strong> a) <em>sol</em> (1 sílaba - monosílaba) | b) <em>tex-to</em> (2 sílabas - bisílaba) | c) <em>pá-rra-fo</em> (3 sílabas - trisílaba) | d) <em>or-ga-ni-za-dor</em> (5 sílabas - polisílaba).
+                        </div>
+                    </div>
+
+                    <div class="card-ejercicio p-4">
+                        <p class="font-bold text-[#1269A8]">Ejercicio 2 (Clasificación por acento):</p>
+                        <p class="text-sm mt-1">Identifica si son agudas, graves, esdrújulas o sobresdrújulas: <strong>a) canción &nbsp;|&nbsp; b) lápiz &nbsp;|&nbsp; c) brújula &nbsp;|&nbsp; d) dígamelo</strong>.</p>
+                        <button class="btn-solucion mt-3 text-xs" onclick="toggleSolucion('sol-ej2', this)">👁️ Mostrar solución</button>
+                        <div id="sol-ej2" class="caja-solucion text-sm">
+                            <strong>Solución:</strong> a) <em>can-ción</em>: Aguda | b) <em>lá-piz</em>: Grave | c) <em>brú-ju-la</em>: Esdrújula | d) <em>dí-ga-me-lo</em>: Sobresdrújula.
+                        </div>
+                    </div>
+
+                    <div class="card-ejercicio p-4">
+                        <p class="font-bold text-[#1269A8]">Ejercicio 3 (Signos de entonación):</p>
+                        <p class="text-sm mt-1">Coloca los signos de interrogación o exclamación correspondientes: <em>"___A qué hora inicia la exposición grupal___ ___Qué emoción participar hoy___"</em></p>
+                        <button class="btn-solucion mt-3 text-xs" onclick="toggleSolucion('sol-ej3', this)">👁️ Mostrar solución</button>
+                        <div id="sol-ej3" class="caja-solucion text-sm">
+                            <strong>Solución:</strong> <em>"<strong>¿</strong>A qué hora inicia la exposición grupal<strong>?</strong> <strong>¡</strong>Qué emoción participar hoy<strong>!</strong>"</em> (Recuerda usar signos de apertura y cierre).
+                        </div>
+                    </div>
+
+                    <div class="card-ejercicio p-4">
+                        <p class="font-bold text-[#1269A8]">Ejercicio 4 (Tipos de oración):</p>
+                        <p class="text-sm mt-1">Indica qué tipo de oración es: <em>"Ojalá todos aprobemos la Unidad 1 con excelencia."</em></p>
+                        <button class="btn-solucion mt-3 text-xs" onclick="toggleSolucion('sol-ej4', this)">👁️ Mostrar solución</button>
+                        <div id="sol-ej4" class="caja-solucion text-sm">
+                            <strong>Solución:</strong> Es una <strong>oración desiderativa</strong>, ya que expresa un deseo o anhelo del hablante introducido por "Ojalá".
+                        </div>
+                    </div>
+
+                    <div class="card-ejercicio p-4">
+                        <p class="font-bold text-[#1269A8]">Ejercicio 5 (Organizadores gráficos):</p>
+                        <p class="text-sm mt-1">¿Qué organizador gráfico utiliza llaves <code>{ }</code> para clasificar conceptos de lo general a lo particular?</p>
+                        <button class="btn-solucion mt-3 text-xs" onclick="toggleSolucion('sol-ej5', this)">👁️ Mostrar solución</button>
+                        <div id="sol-ej5" class="caja-solucion text-sm">
+                            <strong>Solución:</strong> El <strong>Cuadro Sinóptico</strong>.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BLOQUE INTERMEDIO (6 - 10) -->
+                <div class="space-y-3">
+                    <h3 class="text-lg font-bold text-[#1269A8] border-b border-gray-300 pb-1">🟡 Nivel Intermedio (Ejercicios 6 al 10)</h3>
+
+                    <div class="card-ejercicio p-4">
+                        <p class="font-bold text-[#1269A8]">Ejercicio 6 (Reglas de tildación):</p>
+                        <p class="text-sm mt-1">Coloca la tilde únicamente en las palabras que la necesiten: <em>examen - examenes - cafe - cesped - reloj - musica</em>.</p>
+                        <button class="btn-solucion mt-3 text-xs" onclick="toggleSolucion('sol-ej6', this)">👁️ Mostrar solución</button>
+                        <div id="sol-ej6" class="caja-solucion text-sm">
+                            <strong>Solución:</strong> examen (grave en n, sin tilde) | <strong>exámenes</strong> (esdrújula) | <strong>café</strong> (aguda en vocal) | <strong>césped</strong> (grave en d) | reloj (aguda en j, sin tilde) | <strong>música</strong> (esdrújula).
+                        </div>
+                    </div>
+
+                    <div class="card-ejercicio p-4">
+                        <p class="font-bold text-[#1269A8]">Ejercicio 7 (Signos auxiliares):</p>
+                        <p class="text-sm mt-1">¿Qué signo auxiliar debes usar para encerrar una cita textual exacta de un autor dentro de tu redacción?</p>
+                        <button class="btn-solucion mt-3 text-xs" onclick="toggleSolucion('sol-ej7', this)">👁️ Mostrar solución</button>
+                        <div id="sol-ej7" class="caja-solucion text-sm">
+                            <strong>Solución:</strong> Las <strong>comillas (« » o " ")</strong>. Ejemplo: Como afirmó Cervantes: «El que lee mucho y anda mucho, ve mucho y sabe mucho».
+                        </div>
+                    </div>
+
+                    <div class="card-ejercicio p-4">
+                        <p class="font-bold text-[#1269A8]">Ejercicio 8 (Análisis de párrafos):</p>
+                        <p class="text-sm mt-1">Identifica la función de la oración subrayada: <em>"El agua es vital para los seres humanos. <u>Sin ella, nuestro organismo no podría regular su temperatura ni transportar nutrientes.</u>"</em></p>
+                        <button class="btn-solucion mt-3 text-xs" onclick="toggleSolucion('sol-ej8', this)">👁️ Mostrar solución</button>
+                        <div id="sol-ej8" class="caja-solucion text-sm">
+                            <strong>Solución:</strong> Es una <strong>idea secundaria de argumentación/explicación</strong>, pues fundamenta por qué el agua es vital (idea principal).
+                        </div>
+                    </div>
+
+                    <div class="card-ejercicio p-4">
+                        <p class="font-bold text-[#1269A8]">Ejercicio 9 (Técnicas de discusión grupal):</p>
+                        <p class="text-sm mt-1">Diferencia brevemente entre un <strong>Panel</strong> y un <strong>Foro</strong>.</p>
+                        <button class="btn-solucion mt-3 text-xs" onclick="toggleSolucion('sol-ej9', this)">👁️ Mostrar solución</button>
+                        <div id="sol-ej9" class="caja-solucion text-sm">
+                            <strong>Solución:</strong> En el <strong>panel</strong>, un grupo reducido de expertos dialoga sobre un tema frente a un auditorio; en el <strong>foro</strong>, participa abierta y libremente toda la audiencia expresando sus opiniones tras una actividad previa.
+                        </div>
+                    </div>
+
+                    <div class="card-ejercicio p-4">
+                        <p class="font-bold text-[#1269A8]">Ejercicio 10 (Uso del punto y coma):</p>
+                        <p class="text-sm mt-1">Inserta el punto y coma donde corresponda: <em>"Carlos preparó el mapa conceptual María redactó la introducción y Luis expuso las conclusiones."</em></p>
+                        <button class="btn-solucion mt-3 text-xs" onclick="toggleSolucion('sol-ej10', this)">👁️ Mostrar solución</button>
+                        <div id="sol-ej10" class="caja-solucion text-sm">
+                            <strong>Solución:</strong> <em>"Carlos preparó el mapa conceptual<strong>;</strong> María redactó la introducción<strong>;</strong> y Luis expuso las conclusiones."</em> (Separa proposiciones yuxtapuestas o extensas con relación semántica).
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BLOQUE AVANZADO (11 - 15) -->
+                <div class="space-y-3">
+                    <h3 class="text-lg font-bold text-[#1269A8] border-b border-gray-300 pb-1">🔴 Nivel Avanzado (Ejercicios 11 al 15)</h3>
+
+                    <div class="card-ejercicio p-4">
+                        <p class="font-bold text-[#1269A8]">Ejercicio 11 (Ambigüedad por puntuación):</p>
+                        <p class="text-sm mt-1">Cambia la puntuación de la frase <em>"No queremos saber"</em> para que signifique exactamente lo contrario (afirmación de querer saber).</p>
+                        <button class="btn-solucion mt-3 text-xs" onclick="toggleSolucion('sol-ej11', this)">👁️ Mostrar solución</button>
+                        <div id="sol-ej11" class="caja-solucion text-sm">
+                            <strong>Solución:</strong> <em>"<strong>No,</strong> queremos saber."</em> (La coma después del adverbio de negación cambia por completo el sentido sintáctico de la oración).
+                        </div>
+                    </div>
+
+                    <div class="card-ejercicio p-4">
+                        <p class="font-bold text-[#1269A8]">Ejercicio 12 (Guion vs. Raya):</p>
+                        <p class="text-sm mt-1">Explica en qué casos se usa el <strong>guion corto (-)</strong> frente a la <strong>raya (—)</strong> en un texto narrativo.</p>
+                        <button class="btn-solucion mt-3 text-xs" onclick="toggleSolucion('sol-ej12', this)">👁️ Mostrar solución</button>
+                        <div id="sol-ej12" class="caja-solucion text-sm">
+                            <strong>Solución:</strong> El <strong>guion (-)</strong> une palabras compuestas (<em>teórico-práctico</em>) o divide palabras al final del renglón. La <strong>raya (—)</strong>, de mayor longitud, introduce parlamentos en diálogos o encierra incisos aclaratorios del narrador.
+                        </div>
+                    </div>
+
+                    <div class="card-ejercicio p-4">
+                        <p class="font-bold text-[#1269A8]">Ejercicio 13 (Producción con restricción sintáctica):</p>
+                        <p class="text-sm mt-1">Escribe un breve diálogo de 2 intervenciones sobre la importancia de la ortografía que incluya: una oración interrogativa, una palabra sobresdrújula y paréntesis.</p>
+                        <button class="btn-solucion mt-3 text-xs" onclick="toggleSolucion('sol-ej13', this)">👁️ Mostrar solución</button>
+                        <div id="sol-ej13" class="caja-solucion text-sm">
+                            <strong>Solución Modelo:</strong> <br>
+                            —¿Por qué revisas tanto tu borrador? (preguntó Andrés con curiosidad).<br>
+                            —<strong>Explícamelo</strong> tú: una buena ortografía garantiza que nuestro mensaje se comprenda sin errores.
+                        </div>
+                    </div>
+
+                    <div class="card-ejercicio p-4">
+                        <p class="font-bold text-[#1269A8]">Ejercicio 14 (Tildación de adverbios terminados en -mente):</p>
+                        <p class="text-sm mt-1">Justifica si las palabras <em>"fácilmente"</em> y <em>"velozmente"</em> deben llevar tilde.</p>
+                        <button class="btn-solucion mt-3 text-xs" onclick="toggleSolucion('sol-ej14', this)">👁️ Mostrar solución</button>
+                        <div id="sol-ej14" class="caja-solucion text-sm">
+                            <strong>Solución:</strong> Los adverbios terminados en <em>-mente</em> conservan la tilde del adjetivo original. <strong>Fácilmente</strong> lleva tilde porque <em>fácil</em> la lleva; <strong>velozmente</strong> NO lleva tilde porque <em>veloz</em> no la lleva.
+                        </div>
+                    </div>
+
+                    <div class="card-ejercicio p-4">
+                        <p class="font-bold text-[#1269A8]">Ejercicio 15 (Coherencia Textual):</p>
+                        <p class="text-sm mt-1">Detecta el error de coherencia en este párrafo y corrígelo: <em>"Ayer tuvimos un debate muy ordenado en clase. Todos gritaban al mismo tiempo y nadie respetó los turnos asignados por el moderador."</em></p>
+                        <button class="btn-solucion mt-3 text-xs" onclick="toggleSolucion('sol-ej15', this)">👁️ Mostrar solución</button>
+                        <div id="sol-ej15" class="caja-solucion text-sm">
+                            <strong>Solución:</strong> Existe una contradicción lógica entre "muy ordenado" y "todos gritaban". <strong>Corrección:</strong> <em>"Ayer tuvimos un debate muy <strong>desordenado</strong> en clase, pues todos gritaban al mismo tiempo y nadie respetó los turnos..."</em> (o viceversa).
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================================================================== -->
+            <!-- SECCIÓN 4: PREGUNTAS DE REFLEXIÓN CRÍTICA                             -->
+            <!-- ===================================================================== -->
+            <section id="reflexion" class="tab-content space-y-6">
+                <div class="bg-white p-6 rounded-xl border-l-4 border-[#F7D615] shadow-sm">
+                    <h2 class="text-2xl font-bold text-[#1269A8]">Preguntas de Reflexión Crítica y Pensamiento Lógico</h2>
+                    <p class="text-sm text-gray-600 mt-1">Espacio para el análisis profundo en plenaria, mesas redondas o bitácora personal del estudiante.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="card-montano p-5 space-y-3">
+                        <span class="badge-azul">1. Pragmática y Significado</span>
+                        <h3 class="text-lg font-bold text-[#1269A8]">¿Una tilde o una coma pueden cambiar la realidad?</h3>
+                        <p class="text-sm text-gray-700 leading-relaxed">
+                            Analiza la diferencia entre escribir <em>"Vamos a comer, niños"</em> y <em>"Vamos a comer niños"</em>, o entre <em>"El público criticó la obra"</em> y <em>"El publico critico la obra"</em>. ¿Por qué la ortografía no es un simple adorno estético, sino una herramienta ética y legal para evitar malentendidos en la sociedad?
+                        </p>
+                    </div>
+
+                    <div class="card-montano p-5 space-y-3">
+                        <span class="badge-oliva">2. Comunicación Democrática</span>
+                        <h3 class="text-lg font-bold text-[#1269A8]">Debatir para comprender vs. discutir para ganar</h3>
+                        <p class="text-sm text-gray-700 leading-relaxed">
+                            En las técnicas de discusión grupal (debate, foro, mesa redonda), ¿qué ocurre cuando los participantes confunden argumentar con atacar a la persona? ¿Cómo influye la escucha activa en la construcción de acuerdos dentro del aula de Primero Básico?
+                        </p>
+                    </div>
+
+                    <div class="card-montano p-5 space-y-3">
+                        <span class="badge-azul">3. Arquitectura del Pensamiento</span>
+                        <h3 class="text-lg font-bold text-[#1269A8]">Del texto lineal al organizador gráfico</h3>
+                        <p class="text-sm text-gray-700 leading-relaxed">
+                            Cuando transformas un texto de tres páginas en un mapa conceptual o cuadro sinóptico, ¿qué procesos mentales estás ejecutando? ¿Por qué el cerebro humano retiene mejor la información cuando logra jerarquizar ideas principales y secundarias?
+                        </p>
+                    </div>
+
+                    <div class="card-montano p-5 space-y-3">
+                        <span class="badge-oliva">4. Entonación e Intención Comunicativa</span>
+                        <h3 class="text-lg font-bold text-[#1269A8]">La voz detrás del texto escrito</h3>
+                        <p class="text-sm text-gray-700 leading-relaxed">
+                            En la comunicación digital actual (mensajes de texto y redes sociales), muchos jóvenes omiten los signos de apertura (¿ ¡) y la puntuación. ¿De qué manera la ausencia de estos signos afecta la interpretación emocional de un mensaje?
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================================================================== -->
+            <!-- SECCIÓN 5: EVALUACIÓN FORMATIVA CON SOLUCIONES OCULTAS                 -->
+            <!-- ===================================================================== -->
+            <section id="evaluacion" class="tab-content space-y-6">
+                <div class="bg-white p-5 rounded-xl border-2 border-[#1269A8] flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-[#1269A8]">Evaluación Formativa de Comprobación (Unidad 1)</h2>
+                        <p class="text-sm text-gray-600">Autoevaluación integral antes del cierre de unidad. Resuelve cada reactivo y despliega la solución paso a paso.</p>
+                    </div>
+                    <span class="badge-amarillo">5 Reactivos Integradores</span>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- REACTIVO 1 -->
+                    <div class="card-ejercicio p-5">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="badge-azul">Reactivo 1 • Análisis Textual y Párrafos</span>
+                            <span class="text-xs font-bold text-[#54887D]">Valor sugerido: 20%</span>
+                        </div>
+                        <p class="font-semibold text-gray-800">Lee el siguiente texto y responde: (a) ¿Cuántos párrafos tiene? (b) ¿Cuál es la idea principal? (c) ¿Qué organizador gráfico es ideal para representarlo?</p>
+                        <blockquote class="bg-white p-3 rounded-lg border-l-4 border-[#54887D] text-sm italic my-2">
+                            "La comunicación oral efectiva requiere tres pilares fundamentales: claridad en el mensaje, entonación adecuada y lenguaje corporal coherente. Cuando un orador domina estos elementos, logra mantener la atención de su audiencia durante toda su intervención."
+                        </blockquote>
+                        <button class="btn-solucion mt-2 text-sm" onclick="toggleSolucion('sol-eval1', this)">
+                            👁️ Mostrar solución
+                        </button>
+                        <div id="sol-eval1" class="caja-solucion text-sm space-y-1">
+                            <p><strong>Paso 1 (Estructura):</strong> El texto consta de <strong>1 solo párrafo</strong> compuesto por 2 oraciones separadas por punto y seguido.</p>
+                            <p><strong>Paso 2 (Idea Principal):</strong> <em>"La comunicación oral efectiva requiere tres pilares fundamentales: claridad en el mensaje, entonación adecuada y lenguaje corporal coherente."</em></p>
+                            <p><strong>Paso 3 (Organizador):</strong> Un <strong>Mapa Mental</strong> o <strong>Cuadro Sinóptico</strong> de 3 ramificaciones (una por cada pilar).</p>
+                        </div>
+                    </div>
+
+                    <!-- REACTIVO 2 -->
+                    <div class="card-ejercicio p-5">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="badge-azul">Reactivo 2 • Silabeo y Clasificación Acentual</span>
+                            <span class="text-xs font-bold text-[#54887D]">Valor sugerido: 20%</span>
+                        </div>
+                        <p class="font-semibold text-gray-800">Completa el análisis completo (división silábica, número de sílabas y tipo de acento) de las palabras: <strong>1) Cuaderno &nbsp;|&nbsp; 2) Ortográfico &nbsp;|&nbsp; 3) Compás</strong>.</p>
+                        <button class="btn-solucion mt-2 text-sm" onclick="toggleSolucion('sol-eval2', this)">
+                            👁️ Mostrar solución
+                        </button>
+                        <div id="sol-eval2" class="caja-solucion text-sm space-y-1">
+                            <p><strong>1) Cuaderno:</strong> <em>cua - der - no</em> → 3 sílabas (<strong>Trisílaba</strong>) → Sílaba tónica "der" (<strong>Grave</strong> sin tilde porque termina en vocal).</p>
+                            <p><strong>2) Ortográfico:</strong> <em>or - to - grá - fi - co</em> → 5 sílabas (<strong>Polisílaba</strong>) → Sílaba tónica "grá" (<strong>Esdrújula</strong>, siempre lleva tilde).</p>
+                            <p><strong>3) Compás:</strong> <em>com - pás</em> → 2 sílabas (<strong>Bisílaba</strong>) → Sílaba tónica "pás" (<strong>Aguda</strong> con tilde porque termina en "s").</p>
+                        </div>
+                    </div>
+
+                    <!-- REACTIVO 3 -->
+                    <div class="card-ejercicio p-5">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="badge-azul">Reactivo 3 • Signos de Puntuación y Auxiliares</span>
+                            <span class="text-xs font-bold text-[#54887D]">Valor sugerido: 20%</span>
+                        </div>
+                        <p class="font-semibold text-gray-800">Reescribe el siguiente texto aplicando correctamente coma, dos puntos, comillas, paréntesis y signos de interrogación:</p>
+                        <p class="bg-white p-2.5 rounded text-sm my-2 font-mono">La maestra Stephany Colegio Montano nos recordó la frase de Aristóteles La inteligencia consiste no solo en el conocimiento sino también en la destreza de aplicar los conocimientos en la práctica Qué opinan ustedes</p>
+                        <button class="btn-solucion mt-2 text-sm" onclick="toggleSolucion('sol-eval3', this)">
+                            👁️ Mostrar solución
+                        </button>
+                        <div id="sol-eval3" class="caja-solucion text-sm space-y-1">
+                            <p><strong>Texto corregido:</strong></p>
+                            <p class="bg-[#F2F5E9] p-2.5 rounded font-medium">
+                                "La maestra Stephany <strong>(</strong>Colegio Montano<strong>)</strong> nos recordó la frase de Aristóteles<strong>: «</strong>La inteligencia consiste no solo en el conocimiento<strong>,</strong> sino también en la destreza de aplicar los conocimientos en la práctica<strong>». ¿</strong>Qué opinan ustedes<strong>?</strong>"
+                            </p>
+                            <p><strong>Explicación:</strong> Paréntesis para dato institucional; dos puntos antes de cita textual; comillas para encerrar la cita exacta; coma antes de conjunción adversativa "sino"; y signos de interrogación al cierre.</p>
+                        </div>
+                    </div>
+
+                    <!-- REACTIVO 4 -->
+                    <div class="card-ejercicio p-5">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="badge-azul">Reactivo 4 • Tipos de Oración según Actitud del Hablante</span>
+                            <span class="text-xs font-bold text-[#54887D]">Valor sugerido: 20%</span>
+                        </div>
+                        <p class="font-semibold text-gray-800">Clasifica cada una de las siguientes oraciones: <br>a) <em>Tal vez mañana realicemos el foro literario.</em> <br>b) <em>Guarden silencio durante la intervención del ponente.</em> <br>c) <em>¿Preparaste las diapositivas para tu equipo?</em></p>
+                        <button class="btn-solucion mt-2 text-sm" onclick="toggleSolucion('sol-eval4', this)">
+                            👁️ Mostrar solución
+                        </button>
+                        <div id="sol-eval4" class="caja-solucion text-sm space-y-1">
+                            <p><strong>a)</strong> <strong>Oración Dubitativa:</strong> Introduce incertidumbre mediante el adverbio "Tal vez".</p>
+                            <p><strong>b)</strong> <strong>Oración Imperativa (o Exhortativa):</strong> Expresa un mandato o instrucción directa ("Guarden").</p>
+                            <p><strong>c)</strong> <strong>Oración Interrogativa Directa:</strong> Formula una pregunta explícita delimitada por signos de interrogación.</p>
+                        </div>
+                    </div>
+
+                    <!-- REACTIVO 5 -->
+                    <div class="card-ejercicio p-5">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="badge-azul">Reactivo 5 • Caso Práctico de Comunicación Grupal</span>
+                            <span class="text-xs font-bold text-[#54887D]">Valor sugerido: 20%</span>
+                        </div>
+                        <p class="font-semibold text-gray-800">En la Semana 6 (Módulo 4), la clase debe analizar un tema polémico con dos posturas opuestas ("Uso de inteligencia artificial en tareas escolares"). ¿Qué técnica de expresión oral grupal deben seleccionar y cuáles son sus 3 roles indispensables?</p>
+                        <button class="btn-solucion mt-2 text-sm" onclick="toggleSolucion('sol-eval5', this)">
+                            👁️ Mostrar solución
+                        </button>
+                        <div id="sol-eval5" class="caja-solucion text-sm space-y-1">
+                            <p><strong>Técnica seleccionada:</strong> El <strong>Debate</strong> (ideal cuando existen dos posturas antagónicas defendidas con argumentos).</p>
+                            <p><strong>Roles indispensables:</strong> 1) <em>Moderador</em> (dirige turnos y tiempos), 2) <em>Debatientes / Ponentes</em> (equipo a favor y equipo en contra), y 3) <em>Secretario / Auditorio</em> (toma nota de argumentos clave y evalúa la solidez expositiva).</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- PIE DE PIZARRA INSTITUCIONAL -->
+        <footer class="bg-white border-t border-gray-200 px-6 py-3 text-xs text-gray-500 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <span><strong>Colegio Montano</strong> • Plataforma Educativa Canvas</span>
+            <span>Docente: Stephany Godoy • Comunicación y Lenguaje (Primero Básico)</span>
+        </footer>
+
+    </div>
+
+    <!-- LÓGICA INTERACTIVA (PESTAÑAS, SOLUCIONES Y FULLSCREEN API) -->
+    <script>
+        /**
+         * Cambia dinámicamente entre las pestañas horizontales de la pizarra.
+         * @param {Event} evt - Evento de clic del botón.
+         * @param {string} tabId - ID de la sección a mostrar.
+         */
+        function openTab(evt, tabId) {
+            // Ocultar todos los contenidos de pestañas
+            const tabContents = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove("active");
+            }
+
+            // Remover clase activa de todos los botones
+            const tabButtons = document.getElementsByClassName("tab-btn");
+            for (let i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].classList.remove("active");
+            }
+
+            // Mostrar la pestaña seleccionada y activar su botón
+            document.getElementById(tabId).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        /**
+         * Alterna la visibilidad de las cajas de solución paso a paso.
+         * @param {string} idSolucion - ID del contenedor de la solución.
+         * @param {HTMLElement} btn - Botón presionado para actualizar su etiqueta.
+         */
+        function toggleSolucion(idSolucion, btn) {
+            const caja = document.getElementById(idSolucion);
+            const estaVisible = caja.classList.contains("visible");
+
+            if (estaVisible) {
+                caja.classList.remove("visible");
+                btn.innerHTML = "👁️ Mostrar solución";
+                btn.style.backgroundColor = "#1269A8";
+            } else {
+                caja.classList.add("visible");
+                btn.innerHTML = "🙈 Ocultar solución";
+                btn.style.backgroundColor = "#54887D";
+            }
+        }
+
+        /**
+         * Activa o desactiva el modo pantalla completa usando Fullscreen API.
+         */
+        function toggleFullscreen() {
+            const fsText = document.getElementById("fsText");
+            const fsIcon = document.getElementById("fsIcon");
+
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().then(() => {
+                    fsText.textContent = "Salir de pantalla completa";
+                    fsIcon.textContent = "✖";
+                }).catch((err) => {
+                    console.warn("No se pudo activar pantalla completa:", err.message);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen().then(() => {
+                        fsText.textContent = "Pantalla completa";
+                        fsIcon.textContent = "⛶";
+                    });
+                }
+            }
+        }
+
+        // Sincronizar texto del botón si el usuario sale con la tecla ESC
+        document.addEventListener("fullscreenchange", () => {
+            const fsText = document.getElementById("fsText");
+            const fsIcon = document.getElementById("fsIcon");
+            if (!document.fullscreenElement) {
+                fsText.textContent = "Pantalla completa";
+                fsIcon.textContent = "⛶";
+            }
+        });
+    </script>
+</body>
+</html>
